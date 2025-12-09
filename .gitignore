@@ -76,3 +76,9 @@ stockdata/*.csv
 stockdata/*.xlsx
 stockkdata/*.csv
 stockkdata/*.xlsx
+
+# Python 缓存文件
+__pycache__/
+*.pyc
+*.pyo
+
