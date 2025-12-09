@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Literal, Union
 from tqdm import tqdm
 
-from high_growth_stock_list import high_growth_stocks
+
 
 from GetTradeDate import get_trade_date
 
@@ -77,11 +77,14 @@ def get_fkline_data(
 
 if __name__ == "__main__":
     
-    from high_growth_stock_list import high_growth_stocks 
+    
+    
+    from hcpsl import  hcp_stocklist
+    
+    codes=hcp_stocklist[:]
     
     # 使用所有股票
-    codes = high_growth_stocks[:]
-    
+
   
     print(f"总共 {len(codes)} 只股票...")
     
@@ -91,31 +94,7 @@ if __name__ == "__main__":
         print(f"登录失败: {lg.error_msg}")
         exit()
     
-    # # 获取月线数据
-    # print("\n" + "="*70)
-    # print("📈 获取月线数据")
-    # print("="*70)
-    # monthly_data = get_fkline_data(
-    #     days=1000,  # 10年数据
-    #     codes=codes,
-    #     frequency='m',
-    #     delay=0.1,
-    #     save_to_csv=True,
-    #     save_folder="data"
-    # )
-    
-    # # 获取周线数据
-    # print("\n" + "="*70)
-    # print("📈 获取周线数据")
-    # print("="*70)
-    # weekly_data = get_fkline_data(
-    #     days=1000,  # 约6年数据
-    #     codes=codes,
-    #     frequency='w',
-    #     delay=0.1,
-    #     save_to_csv=True,
-    #     save_folder="data"
-    # )
+
     
     # 获取日线数据
     print("\n" + "="*70)
