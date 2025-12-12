@@ -79,14 +79,14 @@ if __name__ == "__main__":
     
     
     
-    from hcpsl import  hcp_stocklist
+    from high_growth_stock_list import  high_growth_stocks
     
-    codes=hcp_stocklist[:]
+    codes=high_growth_stocks[:]
     
     # 使用所有股票
 
   
-    print(f"总共 {len(codes)} 只股票...")
+    print(f"总共 {len(codes[0:1])} 只股票...")
     
     # 登录baostock
     lg = bs.login()
@@ -95,111 +95,53 @@ if __name__ == "__main__":
         exit()
     
 
+
+
+    # 获取日线数据
+    print("\n" + "="*70)
+    print("📈 获取日线数据")
+    print("="*70)
+    daily_data = get_fkline_data(
+        days=3600,  # 约7年数据
+        codes=codes,
+        frequency='m',
+        delay=0.1,
+        save_to_csv=True,
+        save_folder="my-sas/data"
+    )
+    
+    
+        # 获取日线数据
+    print("\n" + "="*70)
+    print("📈 获取日线数据")
+    print("="*70)
+    daily_data = get_fkline_data(
+        days=3600,  # 约7年数据
+        codes=codes,
+        frequency='w',
+        delay=0.1,
+        save_to_csv=True,
+        save_folder="my-sas/data"
+    )
+    
     
     # 获取日线数据
     print("\n" + "="*70)
     print("📈 获取日线数据")
     print("="*70)
     daily_data = get_fkline_data(
-        days=1000,  # 约7年数据
+        days=3600,  # 约7年数据
         codes=codes,
         frequency='d',
         delay=0.1,
         save_to_csv=True,
-        save_folder="data"
+        save_folder="my-sas/data"
     )
+    
+    
     
     # 退出登录
     bs.logout()
     print("\n✅ 所有数据获取完成！")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if __name__ == "__main__":
-    
-    
-    from high_growth_stock_list import high_growth_stocks 
-    
-    # 测试10只股票
-    
-    codes = high_growth_stocks[:]
-    
-    print(codes[0:5])
-    print(f"测试 {len(codes)} 只股票...")
-    
-    # 登录baostock
-    lg = bs.login()
-    if lg.error_code != '0':
-        print(f"登录失败: {lg.error_msg}")
-        exit()
-    
-
-    
-    # 获取数据
-    data = get_fkline_data(
-        days=3650,
-        codes=codes,
-        frequency='m',
-        delay=0.1,
-        save_to_csv=True,
-        save_folder="data"
-    )
-    
-    data1 = get_fkline_data(
-        days=3650,
-        codes=codes,
-        frequency='m',
-        delay=0.1,
-        save_to_csv=True,
-        save_folder="data"
-    )
-    
-    data2 = get_fkline_data(
-        days=1500,
-        codes=codes,
-        frequency='m',
-        delay=0.1,
-        save_to_csv=True,
-        save_folder="data"
-    )
-    
-    
-    
-    #     # 获取数据
-    # data = get_fkline_data(
-    #     days=300,
-    #     codes=codes,
-    #     frequency='w',
-    #     delay=0.1,
-    #     save_to_csv=True,
-    #     save_folder="my-sas/data"
-    # )
-    
-    #     # 获取数据
-    # data = get_fkline_data(
-    #     days=18000,
-    #     codes=codes,
-    #     frequency='d',
-    #     delay=0.1,
-    #     save_to_csv=True,
-    #     save_folder="my-sas/data"
-    # )
-    
-    
-    
-    # 退出登录
-    bs.logout()

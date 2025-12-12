@@ -164,7 +164,7 @@ def get_high_market_value_stock(
 
 if __name__ == "__main__":
     
-    from full_stockcode import full_stockcodes as fsc
+    from fulsl import full_stockcode as fsc
     
     codes=fsc[:]
     
@@ -176,7 +176,7 @@ if __name__ == "__main__":
         
         date = 1,
         stock_codes= codes,
-        threshold = 100.0,  # 这里已经有默认值100.0了
+        threshold = 200.0,  # 这里已经有默认值100.0了
         delay = 0.0001
         
     )

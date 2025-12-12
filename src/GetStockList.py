@@ -59,7 +59,7 @@ if __name__ == "__main__":
     try:
         print("🔐 登录baostock...")
         bs.login()        
-        end_date= get_trade_date()  
+        end_date= get_trade_date(2)  
         
             
         codes = get_stock_codes(end_date)  # get_trade_date()返回的是一个交易日列表，应用时取最近一个。      

@@ -137,27 +137,29 @@ def get_query_profit_codes(
     for _, row in growth_df.iterrows():
         print(f"  {row['stock_code']}: {row['year']}Q{row['quarter']} - 同比: {row['yoy_growth']:.2%}, 环比: {row['qoq_growth']:.2%}")
     
-    # ================= 保存结果 =================
+        # ================= 保存结果 =================
     currenttime = datetime.now().strftime("%Y%m%d_%H") 
     filenamecsv = f"high_growth_stocks_{currenttime}.csv"
     filenamepy = f"high_growth_stocks_{currenttime}.py"
 
-    # 1. 保存完整数据为CSV
-    folder_name2 = "stockdata"
+    # 1. 保存完整数据为CSV - 按同比增长从高到低排序
+    folder_name2 = "data"
     os.makedirs(folder_name2, exist_ok=True)
     csv_path2 = os.path.join(folder_name2, filenamecsv)
-    growth_df.to_csv(csv_path2, index=False, encoding='utf-8-sig')
+    
+    # 对结果按同比增长率降序排序
+    growth_df_sorted = growth_df.sort_values('yoy_growth', ascending=False).reset_index(drop=True)
+    growth_df_sorted.to_csv(csv_path2, index=False, encoding='utf-8-sig')
     print(f"✅ 完整数据保存到: {csv_path2}")
     
-    # 2. 保存股票清单为Python文件
+    # 2. 保存股票清单为Python文件，包含更多数据
     folder_name3 = "src"
     os.makedirs(folder_name3, exist_ok=True)
     
-    stock_list = growth_df['stock_code'].tolist()
-
-    # 直接创建 src 目录并保存
-    os.makedirs("src", exist_ok=True)
-
+    # 使用排序后的数据
+    stock_list = growth_df_sorted['stock_code'].tolist()
+    
+    # 创建新的详细数据文件
     filename = "high_growth_stock_list.py"
     filepath = f"src/{filename}"
 
@@ -165,14 +167,34 @@ def get_query_profit_codes(
         f.write(f"# 自动生成的高增长股票清单（{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}）\n")
         f.write(f"# 筛选条件：同比≥{yoy_threshold:.1%}，环比≥{qoq_threshold:.1%}\n\n")
         
+        # 写入详细的股票数据
+        f.write("high_growth_stocks_details = [\n")
+        for _, row in growth_df_sorted.iterrows():
+            f.write(f"    {{\n")
+            f.write(f"        'stock_code': '{row['stock_code']}',\n")
+            f.write(f"        'year': {row['year']},\n")
+            f.write(f"        'quarter': {row['quarter']},\n")
+            f.write(f"        'yoy_growth': {row['yoy_growth']:.4f},  # 同比增长 {row['yoy_growth']:.2%}\n")
+            f.write(f"        'qoq_growth': {row['qoq_growth']:.4f},  # 环比增长 {row['qoq_growth']:.2%}\n")
+            f.write(f"        'net_profit': {row['net_profit'] if 'net_profit' in row else 'N/A'},\n")
+            f.write(f"        'stat_date': '{row['stat_date'] if 'stat_date' in row else ''}',\n")
+            f.write(f"    }},\n")
+        f.write("]\n\n")
+        
+        # 仍然保留简单的股票代码列表
         stocks_str = ', '.join([f"'{stock}'" for stock in stock_list])
-        f.write(f"high_growth_stocks = [{stocks_str}]  # {len(stock_list)}只股票\n")
+        f.write(f"high_growth_stocks = [{stocks_str}]  # {len(stock_list)}只股票，按同比增长率降序排列\n")
 
-    print(f"已保存到 {filepath}")
+    print(f"已保存详细数据到 {filepath}")
     
     # 返回股票列表
     return stock_list
-
+    
+    
+    
+    
+    
+    
 # ========== 主程序 ==========
 if __name__ == "__main__":
     
@@ -204,8 +226,8 @@ if __name__ == "__main__":
         stock_codes=codes,
 
         show_progress=True,
-        yoy_threshold = 0.10,
-        qoq_threshold= 0.05
+        yoy_threshold = 0.20,
+        qoq_threshold= 0.1
         
         
     )
