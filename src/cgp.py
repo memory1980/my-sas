@@ -92,5 +92,5 @@ def calculate_growth_pure(df_all, yoy_threshold=0.10, qoq_threshold=0.05):
 
 if __name__ == "__main__":
     
-    print("calculate_growth_pure_vectorized模块加载成功")
-    print("使用方法：from calculate_growth_pure_vectorized import calculate_growth_pure_vectorized")
+    print("calculate_growth_pure模块加载成功")
+    print("使用方法：from calculate_growth_pure_vectorized import calculate_growth_pure")

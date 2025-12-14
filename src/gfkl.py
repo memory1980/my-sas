@@ -8,9 +8,9 @@ from tqdm import tqdm
 
 
 
-from GetTradeDate import get_trade_date
+from gtd import get_trade_date
 
-from GetSKLineData import  get_skline_data
+from gskl import  get_skline_data
 
 def get_fkline_data(
     days: int = 180,
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     # 使用所有股票
 
   
-    print(f"总共 {len(codes[0:1])} 只股票...")
+    print(f"总共 {len(codes[:])} 只股票...")
     
     # 登录baostock
     lg = bs.login()
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     print("📈 获取日线数据")
     print("="*70)
     daily_data = get_fkline_data(
-        days=3600,  # 约7年数据
+        days=2000,  # 约7年数据
         codes=codes,
         frequency='m',
         delay=0.1,
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     print("📈 获取日线数据")
     print("="*70)
     daily_data = get_fkline_data(
-        days=3600,  # 约7年数据
+        days=2000,  # 约7年数据
         codes=codes,
         frequency='w',
         delay=0.1,
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     print("📈 获取日线数据")
     print("="*70)
     daily_data = get_fkline_data(
-        days=3600,  # 约7年数据
+        days=1200,  # 约7年数据
         codes=codes,
         frequency='d',
         delay=0.1,

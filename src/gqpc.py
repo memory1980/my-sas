@@ -6,11 +6,11 @@ from typing import List, Tuple, Optional
 
 from tqdm import tqdm
 
-from GetTradeDate import get_trade_date
+from gtd import get_trade_date
 
-from GenQuarPar import generate_quarter_params
+from gqp import generate_quarter_params
 
-from CalGrowPure import calculate_growth_pure
+from cgp import calculate_growth_pure
 
 
 

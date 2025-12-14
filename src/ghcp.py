@@ -168,7 +168,7 @@ if __name__ == "__main__":
     
     codes=fsc[:]
     
-    print(f'总共有{len(codes)}只股票，其中前5只是: {", ".join(codes[0:5])}')
+    print(f'总共有{len(codes)}只股票，其中前5只是: {", ".join(codes[0:2])}')
     
     bs.login()
         
@@ -176,7 +176,7 @@ if __name__ == "__main__":
         
         date = 1,
         stock_codes= codes,
-        threshold = 200.0,  # 这里已经有默认值100.0了
+        threshold = 100.0,  # 这里已经有默认值100.0了
         delay = 0.0001
         
     )

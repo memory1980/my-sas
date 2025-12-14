@@ -4,10 +4,10 @@ import pandas as pd
 import baostock as bs
 from typing import List
 from datetime import datetime
-from GetTradeDate import get_trade_date
+from gtd import get_trade_date
 
 def get_stock_codes(date: str) -> List[str]:   
-    target_date=end_date
+    target_date=date
     print(f"📅 目标交易日: {target_date}")
     print("=" * 50)   
     start_time = time.time()    # 1. 网络请求阶段（耗时最长，必须显示）
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     try:
         print("🔐 登录baostock...")
         bs.login()        
-        end_date= get_trade_date(2)  
+        end_date= get_trade_date()  
         
             
         codes = get_stock_codes(end_date)  # get_trade_date()返回的是一个交易日列表，应用时取最近一个。      
@@ -69,6 +69,8 @@ if __name__ == "__main__":
     finally:
         bs.logout()
         print("👋 已登出baostock")
+    
+
 # 运行结果        
 # (myenv) PS D:\py> & D:/py/myenv/Scripts/python.exe d:/py/myenv/stockfun/1.py
 # 🔐 登录baostock...
