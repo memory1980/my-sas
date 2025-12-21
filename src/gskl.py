@@ -12,7 +12,7 @@ def get_skline_data(
 ) -> pd.DataFrame:   
     """获取单只股票的K线数据"""
     
-    print(f"🚀 开始获取K线数据")
+    # print(f"🚀 开始获取K线数据")
     print(f"   股票代码: {code}")
     print(f"   K线周期: {frequency}")
     print(f"   查询天数: {days}天")
@@ -34,7 +34,7 @@ def get_skline_data(
     
     print(f"   开始日期: {start_date_str}")
     print(f"   结束日期: {end_date_str}")
-    print("=" * 70)
+    print("-" * 50)
 
     # 查询数据 - 关键：使用传入的code参数
     rs = bs.query_history_k_data_plus(
@@ -61,6 +61,13 @@ def get_skline_data(
     
     result = pd.DataFrame(data_list, columns=rs.fields)
     
+    result = result.applymap(lambda x: pd.to_numeric(x, errors='ignore'))
+    
+    
+    # 保留两位小数
+    result = result.round(2)     
+    
+    
     # 数据验证
     if 'code' in result.columns and not result.empty:
         actual_code = result['code'].iloc[0]
@@ -77,12 +84,12 @@ if __name__ == "__main__":
     lg = bs.login()
     
     # 测试不同的股票
-    test_codes = ['sz.002594', 'sh.600000', 'sz.000001']
+    test_codes = ['sz.300322', 'sh.688319', 'sh.688309']
     
     for test_code in test_codes:
-        print(f"\n{'='*70}")
+        print(f"\n{'-'*50}")
         print(f"测试股票: {test_code}")
-        print(f"{'='*70}")
+        print(f"{'-'*50}")
         
         data = get_skline_data(
             days=30,
@@ -95,6 +102,6 @@ if __name__ == "__main__":
             print(f"获取到的股票代码: {data['code'].iloc[0] if 'code' in data.columns else '未知'}")
             print(f"数据行数: {len(data)}")
             print(data.head())
-        print("-" * 70)
+        print("-" * 50)
     
     bs.logout()

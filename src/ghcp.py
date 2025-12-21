@@ -68,7 +68,7 @@ def get_high_market_value_stock(
 
     # 取倒数第二个
 
-    tradingdata = trading_days[-2]
+    tradingdata = trading_days[-1]
     print(f'倒数第二个交易日: {tradingdata}')
     
     end_date = datetime.strptime(tradingdata, '%Y-%m-%d')
@@ -174,10 +174,10 @@ if __name__ == "__main__":
         
     high_cp_stocklist=get_high_market_value_stock(
         
-        date = 1,
+        date = 0,
         stock_codes= codes,
         threshold = 100.0,  # 这里已经有默认值100.0了
-        delay = 0.0001
+        delay = 0
         
     )
     

@@ -1,22 +1,18 @@
 import os
-
 import pandas as pd
-
 import time 
-
 from datetime import datetime
-
+from tqdm.auto import tqdm
 import pprint
 
 
 def analysis_stocks(
-    codes,                    # 股票代码列表（必须）
+    stockcodes,                    # 股票代码列表（必须）
     input_dir=None,           # 数据目录（可选，默认使用项目根目录/data）
     period='M',               # 分析周期：'M'月线，'W'周线，'D'日线（默认'M'）
     threshold=5,              # turn倍数阈值，默认5倍
-    window_n=5,            # 前后分析周期数
-    base_n=5,              # 基准点数量
-
+    window_n=5,               # 前后分析周期数
+    base_n=5,                 # 基准点数量
     save_csv=True,            # 是否保存CSV
     output_dir=None           # 输出目录（可选）
 ):
@@ -25,16 +21,10 @@ def analysis_stocks(
     每个基准点独立展示，后面跟着找到的高turn点和最低close点
     """
 
-
     try:
         terminal_width = os.get_terminal_size().columns
     except OSError:
-        terminal_width = 80  # 如果获取失败，使用一个默认值，例如80
-
-    my_data = {...}  # 你的数据
-    pprint.pprint(my_data, width=terminal_width)
-
-
+        terminal_width = 80
 
     # 周期默认参数配置
     period_config = {
@@ -55,13 +45,12 @@ def analysis_stocks(
     # 获取项目根目录
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
-    # 设置数据目录（如果未提供，使用项目根目录/data）
+    # 设置数据目录
     if input_dir is None:
         data_dir = os.path.join(project_root, "data")
     elif os.path.isabs(input_dir):
         data_dir = input_dir
     else:
-        # 如果是相对路径，基于脚本位置
         script_dir = os.path.dirname(os.path.abspath(__file__))
         data_dir = os.path.abspath(os.path.join(script_dir, input_dir))
     
@@ -69,24 +58,23 @@ def analysis_stocks(
     file_path = os.path.join(data_dir, filename)
     abs_file_path = os.path.abspath(file_path)
     
-    # 设置输出目录（如果未提供，使用项目根目录/anars）
+    # 设置输出目录
     if output_dir is None:
         output_dir = os.path.join(project_root, "anars")
     elif not os.path.isabs(output_dir):
-        # 如果是相对路径，基于脚本位置
         script_dir = os.path.dirname(os.path.abspath(__file__))
         output_dir = os.path.abspath(os.path.join(script_dir, output_dir))
     
-    print("="*70)
+    print("="*50)
     print(f"📊 {config['name']}数据分析")
-    print("="*70)
-    print(f"📋 股票数量: {len(codes)}")
+    print("="*50)
+    print(f"📋 股票数量: {len(stockcodes)}")
     print(f"📁 数据文件: {abs_file_path}")
     print(f"📂 输出目录: {output_dir}")
     print(f"🎯 turn阈值: {threshold}倍")
-    print("="*70)
-
-
+    print(f"📅 window_n: {window_n}")
+    print(f"📊 base_n: {base_n}")
+    print("="*50)
 
     # 检查数据文件
     if not os.path.exists(abs_file_path):
@@ -104,97 +92,141 @@ def analysis_stocks(
         print(f"❌ 加载文件失败: {e}")
         return pd.DataFrame()
     
-    # 分析数据
-  
+    pd.set_option('display.max_colwidth',None) # None 表示不限制宽度
+    
+    data = data.apply(pd.to_numeric, errors='ignore')  
+
+   
+
+    # 保留两位小数
+    data = data.round(2)        
     
 
-
+    
+    # print(data.tail(1))
+    
+    # 确保日期列为datetime类型
     data['date'] = pd.to_datetime(data['date'])
+    
+    print(f"共计{len(stockcodes)}只股票")
+    
+    # 创建并初始化结果变量
+    all_results = []
+    
+    
+    tqdm._instances.clear()
+    
+    # 使用tqdm添加进度条
+    for stock_code in tqdm(stockcodes, desc="分析进度", unit="只"):
+        try:
+            # 筛选当前股票的数据
+            df = data[data['code'] == stock_code]
+            
+            
+            if df.empty:
+                print(f"\n⚠ 股票 {stock_code} 无数据")
+                continue
+            
+            # 获取最新的数据点
+            latest_df = df.nlargest(1, 'date')
+            
+            # print("11111",latest_df)
+            
+            # 按turn排序，获取最大的window_n个turn值，降序排列
+            df_sorted_by_turn = df.sort_values('turn', ascending=False)
+            
+            max_turns = df_sorted_by_turn.head(5)
+            
+            # print("22222",max_turns.head(1))
+            
+            # 合并结果
+            temp_result = pd.concat([latest_df, max_turns], ignore_index=True)
+            
+            # print("33333",temp_result)
+            
+            # 获取具体的数值
+            latest_turn_value = latest_df['turn'].iloc[0]  # 或 .values[0]
+            
+            max_turn_value = max_turns['turn'].max()
+            
+            # print("44444",max_turn_value)
+            
+            if latest_turn_value <= max_turn_value /threshold:
+                
+                all_results.append(temp_result)
+                
+                
 
-    print(f"共计{len(codes)}只股票")
-    
-    #创建并初始化结果变量
-    
-    rs_data=pd.DataFrame()
+            else: 
+        
+                temp_result = pd.DataFrame()
+            
+            # print("55555",all_results)
 
-
-    for code in codes:
-        # 筛选股票数据
-        df = data[data['code'] == code]
-        
-        temp_data = pd.DataFrame()  # 每次循环都重置为空！
-        
-
-        latest_df = df.nlargest(1, 'date')
+            # print("66666",temp_result)
+            
+            
+            
+            
+        except Exception as e:
+            print(f"\n❌ 股票 {stock_code} 分析出错: {e}")
+            continue
     
-        temp_data = pd.concat([temp_data, latest_df], ignore_index=True) 
-        
-         
-        print('\n')
-        
-        tf = df.sort_values('turn')
-        
-        # print(tf)
-        
-        smallest_tf = tf.nsmallest(window_n, 'turn')
-
-        temp_data = pd.concat([temp_data, smallest_tf], ignore_index=True) 
-
-
-        cf = df.sort_values('close')
-   
-        smallest_cf = tf.nsmallest(window_n, 'close')
-   
-        temp_data = pd.concat([temp_data, smallest_cf], ignore_index=True) 
-      
-        hf = df.sort_values('high')
-        
-        smallest_hf = hf.nlargest(window_n, 'high')
-        
-        print('777',hf.info)
-        
-        
-        print('\n')
-        
-        temp_data = pd.concat([temp_data, smallest_hf], ignore_index=True) 
-        
-        print('888',temp_data)
-        
-        print('\n')
+    # 合并所有结果
+    if all_results:
+        rs_data = pd.concat(all_results, ignore_index=True)
+    else:
+        rs_data = pd.DataFrame()
     
-        
-        print('\n')
-        
-        rs_data =pd.concat([rs_data, temp_data], ignore_index=True) 
-     
-  
-        
-    print(rs_data.info)
-        
+    # 安全地转换数值列
+    def safe_numeric_conversion(df):
+        """安全地转换数值列"""
+        df_converted = df.copy()
+        for col in df_converted.columns:
+            # 跳过日期列和代码列
+            if col in ['date', 'code', 'analysis_stock']:
+                continue
+            
+            try:
+                # 尝试转换为数值
+                converted = pd.to_numeric(df_converted[col], errors='coerce')
+                # 如果大部分能转换，则使用转换后的值
+                if converted.notna().sum() / len(df_converted) > 0.5:
+                    df_converted[col] = converted
+            except:
+                pass
+        return df_converted
     
+    rs_data = safe_numeric_conversion(rs_data)
+    
+    # 对数值列保留两位小数
+    numeric_cols = rs_data.select_dtypes(include=['float64', 'float32', 'int64', 'int32']).columns
+    rs_data[numeric_cols] = rs_data[numeric_cols].round(2)
+    
+    print("\n" + "="*50)
+    print(f"📊 分析结果汇总")
+    print("="*50)
+    print(f"总数据行数: {len(rs_data)}")
+    print(f"分析股票数: {rs_data['analysis_stock'].nunique() if 'analysis_stock' in rs_data.columns else 0}")
+    print("\n前10行数据:")
+    print(rs_data.head())
+    print("="*50)
+    
+    # 保存结果
+    if save_csv and not rs_data.empty:
+        timestamp = datetime.now().strftime("%Y%m%d")
+        rs_data_file = os.path.join(output_dir, f"{config['name']}详细结果_{timestamp}.csv")
         
-    print('\n')
-    
-    
-    # 保存提取的数据文件
-   
-    timestamp = datetime.now().strftime("%Y%m%d%H%M")
-    
-    rs_data_file = os.path.join(output_dir, f"{config['name']}详细结果_{timestamp}.csv")
-    rs_data.to_csv(rs_data_file, index=True, encoding='utf-8-sig')
-    
-    print(f"\n💾 详细结果已保存: {rs_data_file}")
-    print(f"📊 总行数: {len(rs_data)} 行")
-
+        # 确保输出目录存在
+        os.makedirs(os.path.dirname(rs_data_file), exist_ok=True)
         
+        rs_data.to_csv(rs_data_file, index=False, encoding='utf-8-sig')
+        print(f"💾 详细结果已保存: {rs_data_file}")
+    
     return rs_data
-    
-
-
 
 
 if __name__ == "__main__":
-   
     # 1. 先获取项目路径
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
@@ -209,35 +241,82 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
     
     # 2. 导入股票列表
-    from ghgs import high_growth_stocks
+    try:
+        from high_growth_stock_list import high_growth_stocks
+        stock_list = high_growth_stocks[:]  # 使用所有股票
+        
+   
+        print(f"\n📋 股票列表样本（前5只）:")
+        print(stock_list[0:5])
+        print(f"总股票数量: {len(stock_list)}")
+        
+    except ImportError as e:
+        print(f"❌ 导入股票列表失败: {e}")
+        # 使用测试股票列表
+        stock_list = ['sh.600000', 'sh.600004', 'sz.000001', 'sz.000002']
+        print(f"📋 使用测试股票列表: {stock_list}")
     
-    stock_list=high_growth_stocks[:]
+    print("\n" + "="*50)
+    print("📈 开始分析 - 月线数据")
+    print("="*50)
     
-    # 3. 分析示例 - 直接修改这里的参数
+    # 分析月线数据
+    try:
+        results1 = analysis_stocks(
+            stockcodes=stock_list,
+            period='M',           # 'M'月线
+            threshold=6,          # 调整阈值倍数
+            window_n=6,          # 调整查找范围
+            base_n=1,             # 调整基准点数量
+            save_csv=True,
+            output_dir=output_dir
+        )
+    except Exception as e:
+        print(f"❌ 月线分析失败: {e}")
+        import traceback
+        traceback.print_exc()
     
-    print("\n" + "="*70)
-    print("📈 开始分析 - 请在下方修改参数")
-    print("="*70)
+    print("\n" + "="*50)
+    print("📈 开始分析 - 周线数据")
+    print("="*50)
     
-    stock_list = high_growth_stocks[:]  # 测试3只股票，可以修改为更多
+    #分析周线数据
+    try:
+        results2 = analysis_stocks(
+            stockcodes=stock_list[:],
+            period='W',           # 'W'周线
+            threshold=6,          # 调整阈值倍数
+            window_n=12,          # 调整查找范围
+            base_n=1,             # 调整基准点数量
+            save_csv=True,
+            output_dir=output_dir
+        )
+    except Exception as e:
+        print(f"❌ 周线分析失败: {e}")
+        import traceback
+        traceback.print_exc()
     
-    # 在这里直接修改参数
-    results= analysis_stocks(
-        codes=stock_list,
-        period='D',           # 'M'月线, 'W'周线, 'D'日线
-        threshold=3,          # 调整阈值倍数
-        window_n=60,          # 调整他们后查找范围
-        base_n=1,            # 调整基准点数量
-        save_csv=True,
-        output_dir=output_dir
-    )
-    
-    print("\n" + "="*70)
+    print("\n" + "="*50)
     print("✅ 分析完成")
-    print("="*70)
-    print("📝 参数说明:")
-    print("   threshold: 阈值倍数，如5表示找5倍以上的turn")
-    print("   window_n: 前后查找范围，如12表示前后12个月")
-    print("   base_n: 基准点数量，取最小的n个turn值作为基准")
-    print("   close_n: 找最低close点的窗口")
-    print("="*70)
+    print("="*50)
+    
+    
+    #    分析周线数据
+    try:
+        results2 = analysis_stocks(
+            stockcodes=stock_list,
+            period='D',           # 'W'周线
+            threshold=5,          # 调整阈值倍数
+            window_n=60,          # 调整查找范围
+            base_n=1,             # 调整基准点数量
+            save_csv=True,
+            output_dir=output_dir
+        )
+    except Exception as e:
+        print(f"❌ 周线分析失败: {e}")
+        import traceback
+        traceback.print_exc()
+    
+    print("\n" + "="*50)
+    print("✅ 分析完成")
+    print("="*50)

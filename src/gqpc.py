@@ -52,7 +52,9 @@ def get_query_profit_codes(
     if show_progress:
         pbar = tqdm(total=total_tasks, desc="查询盈利数据", ncols=100, unit="次")
     
-    for code in stock_codes:
+    
+    for code in tqdm(stock_codes, desc="查询进度"):
+   
         for year_q, quarter_q in quarter_params:
             rs_profit = bs.query_profit_data(
                 code=code,
@@ -167,20 +169,7 @@ def get_query_profit_codes(
         f.write(f"# 自动生成的高增长股票清单（{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}）\n")
         f.write(f"# 筛选条件：同比≥{yoy_threshold:.1%}，环比≥{qoq_threshold:.1%}\n\n")
         
-        # 写入详细的股票数据
-        f.write("high_growth_stocks_details = [\n")
-        for _, row in growth_df_sorted.iterrows():
-            f.write(f"    {{\n")
-            f.write(f"        'stock_code': '{row['stock_code']}',\n")
-            f.write(f"        'year': {row['year']},\n")
-            f.write(f"        'quarter': {row['quarter']},\n")
-            f.write(f"        'yoy_growth': {row['yoy_growth']:.4f},  # 同比增长 {row['yoy_growth']:.2%}\n")
-            f.write(f"        'qoq_growth': {row['qoq_growth']:.4f},  # 环比增长 {row['qoq_growth']:.2%}\n")
-            f.write(f"        'net_profit': {row['net_profit'] if 'net_profit' in row else 'N/A'},\n")
-            f.write(f"        'stat_date': '{row['stat_date'] if 'stat_date' in row else ''}',\n")
-            f.write(f"    }},\n")
-        f.write("]\n\n")
-        
+
         # 仍然保留简单的股票代码列表
         stocks_str = ', '.join([f"'{stock}'" for stock in stock_list])
         f.write(f"high_growth_stocks = [{stocks_str}]  # {len(stock_list)}只股票，按同比增长率降序排列\n")
@@ -198,7 +187,7 @@ def get_query_profit_codes(
 # ========== 主程序 ==========
 if __name__ == "__main__":
     
-    from hcpsl import  hcp_stocklist
+    from hcp_stocklist import  hcp_stocklist
     
     codes=hcp_stocklist[:]
     
@@ -226,8 +215,8 @@ if __name__ == "__main__":
         stock_codes=codes,
 
         show_progress=True,
-        yoy_threshold = 0.20,
-        qoq_threshold= 0.1
+        yoy_threshold = 0.30,
+        qoq_threshold= 0.05
         
         
     )

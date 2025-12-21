@@ -38,7 +38,7 @@ def get_trade_date(OffSetDay=0):   # 第一步，获取交易日
     # 返回最近的一个交易日（字符串）
     if trading_days_list:
         recent_trade_day = trading_days_list[-1]
-        print(f'返回最近交易日：{recent_trade_day}')
+        print(f'   返回最近交易日：{recent_trade_day}')
         return recent_trade_day  # 返回字符串
     else:
         print('没有交易日可返回')

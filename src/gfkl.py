@@ -22,6 +22,18 @@ def get_fkline_data(
 ) -> pd.DataFrame:
     """简洁版本 - 只做循环调用"""
     
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # 构建正确的绝对路径
+    save_folder = os.path.join(current_dir, save_folder)
+    print(f"📁 修正后的绝对保存目录：{save_folder}")
+    # ====== 新增结束 ======
+    
+    if isinstance(codes, str):
+        stock_codes = [codes]
+        print(f"📋 单只股票: {codes}")
+    
+    
+    
     if isinstance(codes, str):
         stock_codes = [codes]
         print(f"📋 单只股票: {codes}")
@@ -38,7 +50,10 @@ def get_fkline_data(
     # 循环调用get_skline_data
     all_data = []
     success_count = 0
-    for code in stock_codes:
+    
+    for code in tqdm(stock_codes, desc="查询进度",mininterval=0.01,ncols=100,colour=None):
+    
+    
         df = get_skline_data(days=days, code=code, frequency=frequency)
         if df is not None:
             all_data.append(df)
@@ -47,33 +62,59 @@ def get_fkline_data(
             time.sleep(delay)
     
     print(f"✅ 成功获取 {success_count}/{len(stock_codes)} 只股票")
-    
-    # 合并数据
+        
+        # 合并数据
     if all_data:
         result = pd.concat(all_data, ignore_index=True)
+        
+        # 数据处理（如需保留）
+        result = result.applymap(lambda x: pd.to_numeric(x, errors='ignore'))
+        result = result.round(2)
+        
+        print(result.head())
         
         # 保存文件
         if save_to_csv:
             os.makedirs(save_folder, exist_ok=True)
-            
-            # 生成文件名 - 只加频率标识
-            current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
-            # 频率标识：d->D, w->W, m->M
+
             freq_upper = frequency.upper()
-            filename = f"stock_data_{freq_upper}.csv"
+            filename = f"index_data_{freq_upper}.csv"
             filepath = os.path.join(save_folder, filename)
-            result.to_csv(filepath, index=False, encoding='utf-8-sig')
-            print(f"💾 数据已保存: {filepath}")
             
-            # 显示文件信息
-            file_size = os.path.getsize(filepath) / 1024 / 1024
-            print(f"📏 文件大小: {file_size:.2f} MB")
+            print(f"🔒 目标文件：{filepath}")
+            print(f"🔍 绝对路径：{os.path.abspath(filepath)}")
+
+
+            # 执行保存
+            result.to_csv(filepath, index=False, encoding='utf-8-sig')
+            print(f"💾 已保存")
+
+            # 验证
+            if os.path.exists(filepath):
+                print(f"✅ 文件存在")
+                actual_size = os.path.getsize(filepath)
+                print(f"✅ 文件大小：{actual_size} 字节")
+                
+                try:
+                    with open(filepath, 'r', encoding='utf-8-sig') as f:
+                        line_count = sum(1 for _ in f)
+                    print(f"✅ 文件行数：{line_count}")
+                except Exception as e:
+                    print(f"⚠️  读取行数出错：{e}")
+            else:
+                print(f"❌ 文件不存在")
+                return result
+
+            # 最终信息
+            file_size_mb = actual_size / 1024 / 1024
+            print(f"📏 文件大小: {file_size_mb:.2f} MB")
             print(f"📊 数据行数: {len(result):,} 行")
-            print(f"📈 包含股票数: {result['code'].nunique() if 'code' in result.columns else '未知'}")
-        
-        return result
+            print(f"📈 股票数: {result['code'].nunique()}")
+
+
+    return result
     
-    return pd.DataFrame()
+   
 
 if __name__ == "__main__":
     
@@ -83,7 +124,7 @@ if __name__ == "__main__":
     
     codes=high_growth_stocks[:]
     
-    # 使用所有股票
+
 
   
     print(f"总共 {len(codes[:])} 只股票...")
@@ -99,46 +140,47 @@ if __name__ == "__main__":
 
     # 获取日线数据
     print("\n" + "="*70)
-    print("📈 获取日线数据")
+    print("📈 获取月线数据")
     print("="*70)
     daily_data = get_fkline_data(
-        days=2000,  # 约7年数据
+        days=600,  # 约7年数据
         codes=codes,
         frequency='m',
-        delay=0.1,
+        delay=0.00000,
         save_to_csv=True,
-        save_folder="my-sas/data"
+        save_folder=r"d:\my-sas\data"
     )
     
     
         # 获取日线数据
     print("\n" + "="*70)
-    print("📈 获取日线数据")
+    print("📈 获取周线数据")
     print("="*70)
     daily_data = get_fkline_data(
-        days=2000,  # 约7年数据
+        days=400,  # 约7年数据
         codes=codes,
         frequency='w',
-        delay=0.1,
+        delay=0.00000,
         save_to_csv=True,
-        save_folder="my-sas/data"
+        save_folder=r"d:\my-sas\data"
     )
     
+   
     
     # 获取日线数据
     print("\n" + "="*70)
     print("📈 获取日线数据")
-    print("="*70)
+    print("-"*50)
     daily_data = get_fkline_data(
-        days=1200,  # 约7年数据
+        days=600,  # 约7年数据
         codes=codes,
         frequency='d',
-        delay=0.1,
+        delay=0.00000,
         save_to_csv=True,
-        save_folder="my-sas/data"
+        save_folder=r"d:\my-sas\data"
     )
     
-    
+    print(daily_data)
     
     # 退出登录
     bs.logout()
