@@ -84,7 +84,7 @@ if __name__ == "__main__":
     lg = bs.login()
     
     # 测试不同的股票
-    test_codes = ['sz.300322', 'sh.688319', 'sh.688309']
+    test_codes = ['sz.0002495', 'sh.688319', 'sh.688309']
     
     for test_code in test_codes:
         print(f"\n{'-'*50}")
@@ -101,7 +101,7 @@ if __name__ == "__main__":
         if not data.empty:
             print(f"获取到的股票代码: {data['code'].iloc[0] if 'code' in data.columns else '未知'}")
             print(f"数据行数: {len(data)}")
-            print(data.head())
+            print(data.tail())
         print("-" * 50)
     
     bs.logout()

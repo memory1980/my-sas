@@ -128,40 +128,64 @@ def analysis_stocks(
                 continue
             
             # 获取最新的数据点
-            latest_df = df.nlargest(1, 'date')
+            # latest_df = df.nlargest(1, 'date')
             
             # print("11111",latest_df)
             
-            # 按turn排序，获取最大的window_n个turn值，降序排列
-            df_sorted_by_turn = df.sort_values('turn', ascending=False)
+                        # 获取最新的数据点
+            latest_df = df.nlargest(2, 'date')
             
-            max_turns = df_sorted_by_turn.head(5)
+            # print("22222",latest_df)
             
-            # print("22222",max_turns.head(1))
+            # print('33333',latest_df[-2:-1])
             
-            # 合并结果
-            temp_result = pd.concat([latest_df, max_turns], ignore_index=True)
+            # print('4444',latest_df[-1:])
+            
+            # # 按turn排序，获取最大的window_n个turn值，降序排列
+            # df_sorted_by_turn = df.sort_values('turn', ascending=False)
+            
+            # max_turns = df_sorted_by_turn.head(window_n)
+            
+                      
+            # print("22222",max_turns.head())
+            
+            temp_result=latest_df
+            
+            
+            # # 合并结果
+            # temp_result = pd.concat([latest_df, max_turns], ignore_index=True)
             
             # print("33333",temp_result)
             
-            # 获取具体的数值
-            latest_turn_value = latest_df['turn'].iloc[0]  # 或 .values[0]
+            # # 获取具体的数值
+            # latest_turn_value = latest_df['turn'].iloc[0]  # 或 .values[0]
             
-            max_turn_value = max_turns['turn'].max()
+            # max_turn_value = max_turns['turn'].max()
             
             # print("44444",max_turn_value)
             
-            if latest_turn_value <= max_turn_value /threshold:
+            # if latest_df.turn[-1:]>= latest_df.turn[-2:-1]  *threshold:
+            
+            print(latest_df.iloc[0]['turn'])
+            
+            print(latest_df.iloc[1]['turn'])
+            
+            
                 
-                all_results.append(temp_result)
+            if latest_df.iloc[0]['turn']<=latest_df.iloc[1]['turn'] *threshold:
                 
                 
+                all_results.append(temp_result)               
+            
+                print("55555",all_results)
 
             else: 
         
                 temp_result = pd.DataFrame()
+                
+                 
             
-            # print("55555",all_results)
+            print("666",all_results)
 
             # print("66666",temp_result)
             
@@ -247,7 +271,7 @@ if __name__ == "__main__":
         
    
         print(f"\n📋 股票列表样本（前5只）:")
-        print(stock_list[0:5])
+        print(stock_list[:])
         print(f"总股票数量: {len(stock_list)}")
         
     except ImportError as e:
@@ -261,44 +285,44 @@ if __name__ == "__main__":
     print("="*50)
     
     # 分析月线数据
-    try:
-        results1 = analysis_stocks(
-            stockcodes=stock_list,
-            period='M',           # 'M'月线
-            threshold=6,          # 调整阈值倍数
-            window_n=6,          # 调整查找范围
-            base_n=1,             # 调整基准点数量
-            save_csv=True,
-            output_dir=output_dir
-        )
-    except Exception as e:
-        print(f"❌ 月线分析失败: {e}")
-        import traceback
-        traceback.print_exc()
+    # try:
+    #     results1 = analysis_stocks(
+    #         stockcodes=stock_list,
+    #         period='M',           # 'M'月线
+    #         threshold=5,          # 调整阈值倍数
+    #         window_n=5,          # 调整查找范围
+    #         base_n=1,             # 调整基准点数量
+    #         save_csv=True,
+    #         output_dir=output_dir
+    #     )
+    # except Exception as e:
+    #     print(f"❌ 月线分析失败: {e}")
+    #     import traceback
+    #     traceback.print_exc()
     
-    print("\n" + "="*50)
-    print("📈 开始分析 - 周线数据")
-    print("="*50)
+    # print("\n" + "="*50)
+    # print("📈 开始分析 - 周线数据")
+    # print("="*50)
     
-    #分析周线数据
-    try:
-        results2 = analysis_stocks(
-            stockcodes=stock_list[:],
-            period='W',           # 'W'周线
-            threshold=6,          # 调整阈值倍数
-            window_n=12,          # 调整查找范围
-            base_n=1,             # 调整基准点数量
-            save_csv=True,
-            output_dir=output_dir
-        )
-    except Exception as e:
-        print(f"❌ 周线分析失败: {e}")
-        import traceback
-        traceback.print_exc()
+    # #分析周线数据
+    # try:
+    #     results2 = analysis_stocks(
+    #         stockcodes=stock_list[:],
+    #         period='W',           # 'W'周线
+    #         threshold=5,          # 调整阈值倍数
+    #         window_n=12,          # 调整查找范围
+    #         base_n=1,             # 调整基准点数量
+    #         save_csv=True,
+    #         output_dir=output_dir
+    #     )
+    # except Exception as e:
+    #     print(f"❌ 周线分析失败: {e}")
+    #     import traceback
+    #     traceback.print_exc()
     
-    print("\n" + "="*50)
-    print("✅ 分析完成")
-    print("="*50)
+    # print("\n" + "="*50)
+    # print("✅ 分析完成")
+    # print("="*50)
     
     
     #    分析周线数据
@@ -306,8 +330,8 @@ if __name__ == "__main__":
         results2 = analysis_stocks(
             stockcodes=stock_list,
             period='D',           # 'W'周线
-            threshold=5,          # 调整阈值倍数
-            window_n=60,          # 调整查找范围
+            threshold=2,          # 调整阈值倍数
+            window_n=3,          # 调整查找范围
             base_n=1,             # 调整基准点数量
             save_csv=True,
             output_dir=output_dir

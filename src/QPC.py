@@ -6,11 +6,11 @@ from typing import List, Tuple, Optional
 
 from tqdm import tqdm
 
-from gtd import get_trade_date
+from GTD import get_trade_date
 
-from gqp import generate_quarter_params
+from QP import generate_quarter_params
 
-from cgp import calculate_growth_pure
+from CGP import calculate_growth_pure
 
 
 
@@ -166,7 +166,7 @@ def get_query_profit_codes(
     filepath = f"src/{filename}"
 
     with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(f"# 自动生成的高增长股票清单（{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}）\n")
+        f.write(f"# 自动生成的高增长股票清单（{datetime.now().strftime('%Y-%m-%d')}）\n")
         f.write(f"# 筛选条件：同比≥{yoy_threshold:.1%}，环比≥{qoq_threshold:.1%}\n\n")
         
 
@@ -178,7 +178,7 @@ def get_query_profit_codes(
     
     # 返回股票列表
     return stock_list
-    
+  
     
     
     
@@ -201,9 +201,10 @@ if __name__ == "__main__":
     
     # 方案：外部生成精确的6个季度
     trading_date = get_trade_date()
+    
     quarter_params = generate_quarter_params(trading_date, 7)
     
-    print(f"📅 当前交易日: {trading_date}")
+    # print(f"📅 当前交易日: {trading_date}")
     print(f"📊 查询季度: {quarter_params}")
     
     print("\n" + "-" * 60)

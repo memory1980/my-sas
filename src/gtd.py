@@ -5,7 +5,9 @@ from datetime import datetime, timedelta
 
 
 def get_trade_date(OffSetDay=0):   # 第一步，获取交易日
+    
     days=OffSetDay      
+    
     e_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')         
     s_date = (datetime.now() - timedelta(days=21)).strftime('%Y-%m-%d')
     # print("开始日期为：", s_date)        
@@ -17,38 +19,50 @@ def get_trade_date(OffSetDay=0):   # 第一步，获取交易日
     
     data_list = []
     while (rs.error_code == '0') & rs.next():    
+        
         data_list.append(rs.get_row_data())
     
-    result1 = pd.DataFrame(data_list, columns=rs.fields)
-    trading_days = result1[result1['is_trading_day'] == '1']['calendar_date']     
+    result = pd.DataFrame(data_list, columns=rs.fields)
+    
+    trading_days = result[result['is_trading_day'] == '1']['calendar_date']     
     
     trading_days_list = trading_days.tolist() 
     
-    # print(f'获取{len(result1)}个日期，其中{len(trading_days_list)}个为交易日')
+    #判断当前时间是否是下午6点半之前
     
-    # 打印最近5个交易日用于调试
+    current_time = datetime.now().time()
     
-    # if len(trading_days_list) >= 5:
-    #     print('获取的交易日列表最后2个日期：', trading_days_list[-2:])
-    # elif trading_days_list:
-    #     print('获取的交易日列表：', trading_days_list)
-    # else:
-    #     print('没有找到交易日')
+    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
     
-    # 返回最近的一个交易日（字符串）
-    if trading_days_list:
+       
+    target_time = datetime.strptime("18:30", "%H:%M").time()
+    
+        
+    if current_time > target_time:
+        
         recent_trade_day = trading_days_list[-1]
-        print(f'   返回最近交易日：{recent_trade_day}')
-        return recent_trade_day  # 返回字符串
+        
+        print(f'最近交易日：{recent_trade_day}')
+   
     else:
-        print('没有交易日可返回')
-        return None
+   
+        print(f'当前时间{current_time}，当前交易日没有结束，没有当天数据')
+   
+   
+        recent_trade_day = trading_days_list[-2]
+        
+        print(f'最近的前一个交易日：{recent_trade_day}')
     
+    return recent_trade_day
+      
+    
+    
+
     
 if __name__ == "__main__":
     lg=bs.login()  
     td_list=get_trade_date()
-    print(td_list)
+    # print(td_list)
     lg=bs.logout()
 #实际运行结果：
 # (myenv) PS D:\py> & D:/py/myenv/Scripts/python.exe d:/py/myenv/stockfun/get_trade_date.py

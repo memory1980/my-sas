@@ -5,6 +5,8 @@ from typing import List, Union
 import baostock as bs
 from tqdm import tqdm
 
+from GTD import get_trade_date
+
 
 
 
@@ -28,7 +30,7 @@ def get_high_market_value_stock(
 
     print(f"🚀 开始市值筛选")
     print(f"   股票数量: {len(stock_codes) if stock_codes else '使用默认列表'} 只")  # ✅ 处理None
-    print(f"   市值阈值: {threshold} 亿元")
+    print(f"   阈值: {threshold} 亿元")
 
     # 根据date类型显示不同信息
     if isinstance(date, int):
@@ -44,32 +46,15 @@ def get_high_market_value_stock(
 
  
 
-
     if stock_codes is None:
         # 使用默认列表
   
         stock_codes = ['sh.600000', 'sh.600004', 'sh.600006']
     
     #### 获取交易日信息 ####
-    tradingday = bs.query_trade_dates()
 
 
-    
-    tradingdata_list = []
-    while (tradingday.error_code == '0') & tradingday.next():
-        # 获取一条记录，将记录合并在一起
-        tradingdata_list.append(tradingday.get_row_data())
-
-    # 这里变量名写错了，应该是 tradingdayrs
-    tradingdayrs = pd.DataFrame(tradingdata_list, columns=tradingday.fields)
-
-
-    trading_days = tradingdayrs[tradingdayrs['is_trading_day'] == '1']['calendar_date'].tolist()
-
-    # 取倒数第二个
-
-    tradingdata = trading_days[-1]
-    print(f'倒数第二个交易日: {tradingdata}')
+    tradingdata = get_trade_date()
     
     end_date = datetime.strptime(tradingdata, '%Y-%m-%d')
 
@@ -159,12 +144,11 @@ def get_high_market_value_stock(
         print(f"✅ Python格式保存到: {py_path}")
     return hcp_stocklist
     
-  
     
 
 if __name__ == "__main__":
     
-    from fulsl import full_stockcode as fsc
+    from full_stock_list import full_stockcode as fsc
     
     codes=fsc[:]
     
@@ -174,7 +158,7 @@ if __name__ == "__main__":
         
     high_cp_stocklist=get_high_market_value_stock(
         
-        date = 0,
+        date = 7,
         stock_codes= codes,
         threshold = 100.0,  # 这里已经有默认值100.0了
         delay = 0
@@ -182,7 +166,7 @@ if __name__ == "__main__":
     )
     
     
-    print(high_cp_stocklist[0:5])
+    print(f"前5只高增长股票代码：{high_cp_stocklist[0:5]}")
     
         # 登出
     bs.logout()

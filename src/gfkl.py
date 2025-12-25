@@ -78,7 +78,7 @@ def get_fkline_data(
             os.makedirs(save_folder, exist_ok=True)
 
             freq_upper = frequency.upper()
-            filename = f"index_data_{freq_upper}.csv"
+            filename = f"stock_data_{freq_upper}.csv"
             filepath = os.path.join(save_folder, filename)
             
             print(f"🔒 目标文件：{filepath}")
@@ -120,50 +120,50 @@ if __name__ == "__main__":
     
     
     
-    from high_growth_stock_list import  high_growth_stocks
+    from hcp_stocklist import  hcp_stocklist
     
-    codes=high_growth_stocks[:]
+    codes=hcp_stocklist[:]
     
 
 
   
-    print(f"总共 {len(codes[:])} 只股票...")
+    # print(f"总共 {len(codes[:])} 只股票...")
     
-    # 登录baostock
-    lg = bs.login()
-    if lg.error_code != '0':
-        print(f"登录失败: {lg.error_msg}")
-        exit()
+    # # 登录baostock
+    # lg = bs.login()
+    # if lg.error_code != '0':
+    #     print(f"登录失败: {lg.error_msg}")
+    #     exit()
     
 
 
 
-    # 获取日线数据
-    print("\n" + "="*70)
-    print("📈 获取月线数据")
-    print("="*70)
-    daily_data = get_fkline_data(
-        days=600,  # 约7年数据
-        codes=codes,
-        frequency='m',
-        delay=0.00000,
-        save_to_csv=True,
-        save_folder=r"d:\my-sas\data"
-    )
+    # # 获取日线数据
+    # print("\n" + "="*70)
+    # print("📈 获取月线数据")
+    # print("="*70)
+    # daily_data = get_fkline_data(
+    #     days=300,  # 约7年数据
+    #     codes=codes,
+    #     frequency='m',
+    #     delay=0.00000,
+    #     save_to_csv=True,
+    #     save_folder=r"d:\my-sas\data"
+    # )
     
     
-        # 获取日线数据
-    print("\n" + "="*70)
-    print("📈 获取周线数据")
-    print("="*70)
-    daily_data = get_fkline_data(
-        days=400,  # 约7年数据
-        codes=codes,
-        frequency='w',
-        delay=0.00000,
-        save_to_csv=True,
-        save_folder=r"d:\my-sas\data"
-    )
+    #     # 获取日线数据
+    # print("\n" + "="*70)
+    # print("📈 获取周线数据")
+    # print("="*70)
+    # daily_data = get_fkline_data(
+    #     days=300,  # 约7年数据
+    #     codes=codes,
+    #     frequency='w',
+    #     delay=0.00000,
+    #     save_to_csv=True,
+    #     save_folder=r"d:\my-sas\data"
+    # )
     
    
     
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     print("📈 获取日线数据")
     print("-"*50)
     daily_data = get_fkline_data(
-        days=600,  # 约7年数据
+        days=30,  # 约7年数据
         codes=codes,
         frequency='d',
         delay=0.00000,
