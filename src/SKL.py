@@ -2,7 +2,7 @@ import pandas as pd
 import baostock as bs
 from datetime import datetime, timedelta
 from typing import Optional, Literal
-from gtd import get_trade_date
+from GTD import get_trade_date
 
 def get_skline_data(
     days: int = 180,

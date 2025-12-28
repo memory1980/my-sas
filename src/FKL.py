@@ -8,9 +8,9 @@ from tqdm import tqdm
 
 
 
-from gtd import get_trade_date
+from GTD import get_trade_date
 
-from gskl import  get_skline_data
+from SKL import  get_skline_data
 
 def get_fkline_data(
     days: int = 180,
@@ -55,6 +55,7 @@ def get_fkline_data(
     
     
         df = get_skline_data(days=days, code=code, frequency=frequency)
+        
         if df is not None:
             all_data.append(df)
             success_count += 1
@@ -122,18 +123,18 @@ if __name__ == "__main__":
     
     from hcp_stocklist import  hcp_stocklist
     
-    codes=hcp_stocklist[:]
+    codes= hcp_stocklist[:]
     
 
 
   
     # print(f"总共 {len(codes[:])} 只股票...")
     
-    # # 登录baostock
-    # lg = bs.login()
-    # if lg.error_code != '0':
-    #     print(f"登录失败: {lg.error_msg}")
-    #     exit()
+    # 登录baostock
+    lg = bs.login()
+    if lg.error_code != '0':
+        print(f"登录失败: {lg.error_msg}")
+        exit()
     
 
 
@@ -152,7 +153,7 @@ if __name__ == "__main__":
     # )
     
     
-    #     # 获取日线数据
+    # # 获取日线数据
     # print("\n" + "="*70)
     # print("📈 获取周线数据")
     # print("="*70)
@@ -164,15 +165,14 @@ if __name__ == "__main__":
     #     save_to_csv=True,
     #     save_folder=r"d:\my-sas\data"
     # )
-    
-   
+       
     
     # 获取日线数据
     print("\n" + "="*70)
     print("📈 获取日线数据")
     print("-"*50)
     daily_data = get_fkline_data(
-        days=30,  # 约7年数据
+        days=1000,  # 约7年数据
         codes=codes,
         frequency='d',
         delay=0.00000,

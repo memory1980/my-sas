@@ -4,12 +4,12 @@ import pandas as pd
 import baostock as bs
 from typing import List
 from datetime import datetime
-from gtd import get_trade_date
+from GTD import get_trade_date
 
 
-from gskl import get_skline_data
+from SKL import get_skline_data
 
-from gfkl import get_fkline_data
+from FKL import get_fkline_data
 
 from index_codes import  index_codes
 

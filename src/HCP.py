@@ -160,7 +160,7 @@ if __name__ == "__main__":
         
         date = 7,
         stock_codes= codes,
-        threshold = 100.0,  # 这里已经有默认值100.0了
+        threshold = 250.0,  # 这里已经有默认值250.0了
         delay = 0
         
     )
