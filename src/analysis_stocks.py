@@ -161,13 +161,15 @@ def analysis_stocks(
             
             # if latest_df.turn[-1:]>= latest_df.turn[-2:-1]  *threshold:
             
-            # print(latest_df.iloc[0]['turn'])
+            print(latest_df.iloc[0]['turn'])
             
-            # print(latest_df.iloc[1]['turn'])
+            print(latest_df.iloc[1]['turn'])
             
             
                 
-            if latest_df.iloc[0]['turn']>=latest_df.iloc[1]['turn'] *threshold:
+            if latest_df.iloc[0]['turn']>=latest_df.iloc[1]['turn'] *threshold and latest_df.iloc[0]['close']>latest_df.iloc[0]['open'] and latest_df.iloc[1]['close']>latest_df.iloc[1]['open']:
+            
+                
                 
                                 
                 all_results.append(temp_result)               
@@ -294,32 +296,33 @@ if __name__ == "__main__":
     # print("="*50)
     
     #分析周线数据
-    try:
-        results2 = analysis_stocks(
-            stockcodes=stock_list[:],
-            period='W',           # 'W'周线
-            threshold=1.5,          # 调整阈值倍数
-            window_n=12,          # 调整查找范围
-            base_n=1,             # 调整基准点数量
-            save_csv=True,
-            output_dir=output_dir
-        )
-    except Exception as e:
-        print(f"❌ 周线分析失败: {e}")
-        import traceback
-        traceback.print_exc()
+    # try:
+    #     results2 = analysis_stocks(
+    #         stockcodes=stock_list[:],
+    #         period='W',           # 'W'周线
+    #         threshold=2,          # 调整阈值倍数
+    #         window_n=12,          # 调整查找范围
+    #         base_n=1,             # 调整基准点数量
+    #         save_csv=True,
+    #         output_dir=output_dir
+    #     )
+    # except Exception as e:
+    #     print(f"❌ 周线分析失败: {e}")
+    #     import traceback
+    #     traceback.print_exc()
     
-    print("\n" + "="*50)
-    print("✅ 分析完成")
-    print("="*50)
+    # print("\n" + "="*50)
+    # print("✅ 分析完成")
+    # print("="*50)
     
     
     #    分析周线数据
+    
     try:
         results2 = analysis_stocks(
             stockcodes=stock_list,
             period='D',           # 'W'周线
-            threshold=2,          # 调整阈值倍数
+            threshold=1.2,          # 调整阈值倍数
             window_n=3,          # 调整查找范围
             base_n=1,             # 调整基准点数量
             save_csv=True,
