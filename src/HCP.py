@@ -12,7 +12,9 @@ from GTD import get_trade_date
 
 try:
     from progressbar import ProgressBar, Percentage, Bar, Timer
+    
     HAS_PROGRESSBAR = True
+    
 except ImportError:
     HAS_PROGRESSBAR = False
 
