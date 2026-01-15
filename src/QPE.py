@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from GTD import get_trade_date
 
 
-def qfr(
+def qpe(
         stockcodes: List[str] = None,
         offsetday: Union[str, int] = 180,
         delay=0,
@@ -31,13 +31,13 @@ def qfr(
     if stockcodes is None:
         stockcodes = ['sh.600000', 'sh.600004', 'sh.600006']
     
-    pd.set_option('display.max_colwidth',None) # None 表示不限制宽度
+    pd.set_option('display.max_colwidth',180) # None 表示不限制宽度
     
   
     
-    print(f"开始时间: {s_date}")
-    print(f"结束时间: {e_date}")
-    print(f"查讯周期: {offsetday}天") 
+    print(f"开始时间 : {s_date}")
+    print(f"结束时间 : {e_date}")
+    print(f"查讯周期 : {offsetday}天") 
     
     
         
@@ -45,16 +45,15 @@ def qfr(
     fields = None
 
     print(f"查询 {len(stockcodes)} 个股票:")
-    
-
+ 
     
     # 添加进度条
     from tqdm import tqdm
     
     for code in tqdm(stockcodes, desc="查询进度"):
         try:
-            # 正确的参数名是 code 而不是 stockcodes    业绩预告
-            rs = bs.query_forecast_report(
+            # 正确的参数名是 code 而不是 stockcodes
+            rs = bs.query_performance_express_report(
                 code=code,  # 关键修改
                 start_date=s_date, 
                 end_date=e_date
@@ -93,27 +92,24 @@ def qfr(
            
     except:
         # 如果字段名获取失败，使用默认数字列名
-        
-        
         result = pd.DataFrame(data_list)    
     
     
     result = result.apply(pd.to_numeric, errors='ignore')  # 使用ignore而不是coerce，保留非数值列
 
     # 保留两位小数
-    result = result.round(2)       
+    result = result.round(2)        
     
     
-    result = result[result['profitForcastExpStatDate'] == "2025-12-31"] #年报预告
-            
-    result = result[result['profitForcastChgPctDwn'] > 0]
+    result = result[result['performanceExpStatDate'] == "2025-12-31"]  #年报快报，一季报3-30，中报6-60，三季报9-31
     
         
-    result=result.sort_values('profitForcastChgPctDwn', ascending=False)  #按照增速下限进行排序
+    # result = result[result['performanceExpressOPYOY'] > 0]
     
+    
+    result=result.sort_values('performanceExpressOPYOY', ascending=False)  #按照增速下限进行排序
         
-    print(result.head(2))
-    
+    print(result.head())
     
     #保存数据到文件
     
@@ -123,26 +119,26 @@ def qfr(
 
     output_dir = os.path.join(project_root, "data")
 
-    print(project_root)    
+    # print(project_root)    
 
-    print(output_dir)
+    # print(output_dir)
 
     # 创建输出目录
     os.makedirs(output_dir, exist_ok=True)
 
-    print(result.empty)
+    # print(result.empty)
 
     # 保存结果
 
         
     timestamp = datetime.now().strftime("%Y%m%d")
 
-    rs_data_file = os.path.join(output_dir, f"业绩预告_{timestamp}.csv")
+    rs_data_file = os.path.join(output_dir, f"业绩快报_{timestamp}.csv")
 
-    print(timestamp)
+    # print(timestamp)
 
 
-    print(rs_data_file)
+    # print(rs_data_file)
 
 
     # 确保输出目录存在
@@ -153,9 +149,9 @@ def qfr(
 
     print(f"💾 详细结果已保存: {rs_data_file}")
       
-    
-    
+        
     return result
+
 
 
 if __name__ == "__main__":
@@ -167,15 +163,15 @@ if __name__ == "__main__":
     
     code=fsc[:]
     
-    
+        
     print(f"示例前5只股票代码: {code[0:5]}")
     
-
-        
+    
+    
     lg=bs.login()
        
        
-    pd=qfr(stockcodes=code,offsetday=50)
+    pd=qpe(stockcodes=code,offsetday=50)
 
 
     lg=bs.logout()

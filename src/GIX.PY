@@ -4,7 +4,7 @@ import pandas as pd
 import baostock as bs
 from typing import List
 from datetime import datetime
-from gtd import get_trade_date
+from GTD import get_trade_date
 
 def get_index_codes(date: str) -> List[str]:   
     target_date=date
@@ -28,7 +28,7 @@ def get_index_codes(date: str) -> List[str]:
         data_list.append(row)    
     result = pd.DataFrame(data_list, columns=rs.fields)
     #只筛选股票代码
-    prefix_mask = result['code'].str.startswith(('sh.00', 'sh.000', 'sz.39', 'sz.399'))
+    prefix_mask = result['code'].str.startswith(('sh.15'))
     
     mask = prefix_mask
     index_codes = result.loc[mask, 'code'].tolist() #把代码列转成列表形式

@@ -132,6 +132,7 @@ if __name__ == "__main__":
     
     # 登录baostock
     lg = bs.login()
+    
     if lg.error_code != '0':
         print(f"登录失败: {lg.error_msg}")
         exit()
@@ -139,32 +140,32 @@ if __name__ == "__main__":
 
 
 
-    # # 获取日线数据
-    # print("\n" + "="*70)
-    # print("📈 获取月线数据")
-    # print("="*70)
-    # daily_data = get_fkline_data(
-    #     days=300,  # 约7年数据
-    #     codes=codes,
-    #     frequency='m',
-    #     delay=0.00000,
-    #     save_to_csv=True,
-    #     save_folder=r"d:\my-sas\data"
-    # )
+    # 获取日线数据
+    print("\n" + "="*70)
+    print("📈 获取月线数据")
+    print("="*70)
+    daily_data = get_fkline_data(
+        days=300,  # 约7年数据
+        codes=codes,
+        frequency='m',
+        delay=0.00000,
+        save_to_csv=True,
+        save_folder=r"d:\my-sas\data"
+    )
     
     
-    # # 获取日线数据
-    # print("\n" + "="*70)
-    # print("📈 获取周线数据")
-    # print("="*70)
-    # daily_data = get_fkline_data(
-    #     days=30,  # 约7年数据
-    #     codes=codes,
-    #     frequency='w',
-    #     delay=0.00000,
-    #     save_to_csv=True,
-    #     save_folder=r"d:\my-sas\data"
-    # )
+    # 获取日线数据
+    print("\n" + "="*70)
+    print("📈 获取周线数据")
+    print("="*70)
+    daily_data = get_fkline_data(
+        days=30,  # 约7年数据
+        codes=codes,
+        frequency='w',
+        delay=0.00000,
+        save_to_csv=True,
+        save_folder=r"d:\my-sas\data"
+    )
        
     
     # 获取日线数据
@@ -184,6 +185,8 @@ if __name__ == "__main__":
     
     # 退出登录
     bs.logout()
+    
+    
     print("\n✅ 所有数据获取完成！")
 
 
