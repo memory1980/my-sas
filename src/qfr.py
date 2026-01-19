@@ -123,14 +123,14 @@ def qfr(
 
     output_dir = os.path.join(project_root, "data")
 
-    print(project_root)    
+    # print(project_root)    
 
-    print(output_dir)
+    # print(output_dir)
 
     # 创建输出目录
     os.makedirs(output_dir, exist_ok=True)
 
-    print(result.empty)
+    # print(result.empty)
 
     # 保存结果
 
@@ -139,10 +139,10 @@ def qfr(
 
     rs_data_file = os.path.join(output_dir, f"业绩预告_{timestamp}.csv")
 
-    print(timestamp)
+    # print(timestamp)
 
 
-    print(rs_data_file)
+    # print(rs_data_file)
 
 
     # 确保输出目录存在
